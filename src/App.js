@@ -1,20 +1,37 @@
 import './styles/App.css';
 import twitterLogo from './assets/twitter-logo.svg';
-import React from "react";
+import React, {useState, useEffect} from "react";
 
 // Constants
-const TWITTER_HANDLE = '_buildspace';
+const TWITTER_HANDLE = 'PaulaLouvani';
 const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
-const OPENSEA_LINK = '';
-const TOTAL_MINT_COUNT = 50;
+// const OPENSEA_LINK = '';
+// const TOTAL_MINT_COUNT = 50;
 
 const App = () => {
+  const checkIfWalletIsConnected = () =>{
+    const { ethereum } = window;
+
+    if (!ethereum) {
+      console.log("Make sure you havee Mettamask!");
+      return;
+    } else {
+      console.log("We have the ethereum object", ethereum)
+    }
+  }
   // Render Methods
   const renderNotConnectedContainer = () => (
     <button className="cta-button connect-wallet-button">
       Connect to Wallet
     </button>
   );
+
+  /*
+  * This runs our function when the page loads.
+  */
+  useEffect(() => {
+    checkIfWalletIsConnected();
+  }, [])
 
   return (
     <div className="App">
@@ -33,7 +50,7 @@ const App = () => {
             href={TWITTER_LINK}
             target="_blank"
             rel="noreferrer"
-          >{`built on @${TWITTER_HANDLE}`}</a>
+          >{`built by @${TWITTER_HANDLE}`}</a>
         </div>
       </div>
     </div>
