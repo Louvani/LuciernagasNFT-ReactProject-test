@@ -7,6 +7,9 @@ import myEpicNFT from './utils/MyEpicNFT.json'
 // Constants
 const TWITTER_HANDLE = 'PaulaLouvani';
 const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
+
+const CONTRACT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+
 // const OPENSEA_LINK = '';
 // const TOTAL_MINT_COUNT = 50;
 
@@ -30,6 +33,9 @@ const App = () => {
       const account = accounts[0];
       console.log("Found an authorized account: ", account);
       setCurrentAccount(account)
+      // Setup listener! This is for the case where a user comes to our site
+      // and ALREADY had their wallet connected + authorized.
+      setupEventListener();
     } else {
       console.log("No authorized account found");
     }
@@ -46,17 +52,38 @@ const App = () => {
 
       const accounts = await ethereum.request({method: "eth_requestAccounts"});
       console.log("Accounts: ", accounts)
-      console.log("Connectedto : ", accounts[0]);
+      console.log("Connected to : ", accounts[0]);
       setCurrentAccount(accounts[0]);
+      // Setup listener! This is for the case where a user comes to our site
+      // and connected their wallet for the first time.
+      setupEventListener();
     } catch (error) {
       console.log(error);
     }
   }
 
-  const askContractToMintNft = async () => {
-    const CONTRACT_ADDRESS = "0x618b13b43629D81FEE398902476D80317f453ee9"
-
+  const setupEventListener = async () => {
     try {
+      const { ethereum } = window;
+
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const connectedContract = new ethers.Contract(CONTRACT_ADDRESS, myEpicNFT.abi, signer);
+        // This will essentially "capture" our event when our contract throws it.
+        // If you're familiar with webhooks, it's very similar to that!
+        connectedContract.on("NewEpicNFTMinted", (from, tokenId) => {
+          console.log(from, tokenId.toNumber());
+          alert(`Hey there!we have minted yoour NFT. it may be balnc rigth now. It can take a max of 10 min to show up on OpenSea. Here's the link: <https://testnets.opensea.io/assets/${CONTRACT_ADDRESS}/${tokenId.toNumber()}>`)
+        })
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const askContractToMintNft = async () => {
+   try {
       const { ethereum } = window;
 
       if (ethereum) {
@@ -79,6 +106,13 @@ const App = () => {
       console.log(error)
     }
   }
+  /*
+  * This runs our function when the page loads.
+  */
+  useEffect(() => {
+    checkIfWalletIsConnected();
+    // eslint-disable-next-line
+  }, [])
 
   // Render Methods
   const renderNotConnectedContainer = () => (
@@ -87,20 +121,20 @@ const App = () => {
     </button>
   );
 
-  /*
-  * This runs our function when the page loads.
-  */
-  useEffect(() => {
-    checkIfWalletIsConnected();
-  }, [])
 
   return (
     <div className="App">
       <div className="container">
-        <div className="header-container">
-          <p className="header gradient-text">My NFT Collection</p>
+        <header className="header-container header">
+          <div>
+
+
+          <p className="header gradient-text">Luciernagas</p>
           <p className="sub-text">
-            Each unique. Each beautiful. Discover your NFT today.
+          Luciérnaga, luz que vaga,
+          en la noche que divaga,
+          con luna, con las estrellas,
+          te pareces a una de éllas.
           </p>
           {currentAccount === "" ? (
             renderNotConnectedContainer()
@@ -110,7 +144,8 @@ const App = () => {
             </button>
           )}
           {}
-        </div>
+          </div>
+        </header>
         <div className="footer-container">
           <img alt="Twitter Logo" className="twitter-logo" src={twitterLogo} />
           <a
