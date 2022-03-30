@@ -8,14 +8,15 @@ import myEpicNFT from './utils/MyEpicNFT.json'
 const TWITTER_HANDLE = 'PaulaLouvani';
 const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
 
-const CONTRACT_ADDRESS = "0x52D3840cF511AFa7244Ed631b5688915CFeEEe79"
-
-// const OPENSEA_LINK = '';
+const CONTRACT_ADDRESS = "0xae0a8A73b547A33f7c8Cc08Ec980557C4688A33b"
+const OPENSEA_LINK = `https://testnets.opensea.io/assets/${CONTRACT_ADDRESS}/`
 // const TOTAL_MINT_COUNT = 50;
 
 const App = () => {
 
   const [currentAccount, setCurrentAccount] = useState("");
+  const [loading, setLoading] = useState(null);
+  const [nftMinted, setNftMinted] = useState(null);
 
   const checkIfWalletIsConnected = async () =>{
     const { ethereum } = window;
@@ -32,10 +33,20 @@ const App = () => {
     if (accounts.length !== 0) {
       const account = accounts[0];
       console.log("Found an authorized account: ", account);
-      setCurrentAccount(account)
-      // Setup listener! This is for the case where a user comes to our site
-      // and ALREADY had their wallet connected + authorized.
-      setupEventListener();
+      let chainId = await ethereum.request({ method: 'eth_chainId' });
+      console.log("Connected to chain " + chainId);
+      const rinkebyChainId = "0x4";
+      if (chainId !== rinkebyChainId) {
+        alert("You are not connected to the Rinkeby Test Network!");
+      } else {
+        console.log("Connected", accounts[0]);
+        setCurrentAccount(account)
+        getTotalNFTsMintedSoFar()
+        // Setup listener! This is for the case where a user comes to our site
+        // and ALREADY had their wallet connected + authorized.
+        setupEventListener()
+      }
+      
     } else {
       console.log("No authorized account found");
     }
@@ -51,12 +62,20 @@ const App = () => {
       }
 
       const accounts = await ethereum.request({method: "eth_requestAccounts"});
-      console.log("Accounts: ", accounts)
-      console.log("Connected to : ", accounts[0]);
-      setCurrentAccount(accounts[0]);
-      // Setup listener! This is for the case where a user comes to our site
-      // and connected their wallet for the first time.
-      setupEventListener();
+
+      let chainId = await ethereum.request({ method: 'eth_chainId' });
+      console.log("Connected to chain " + chainId);
+
+      // String, hex code of the chainId of the Rinkebey test network
+      const rinkebyChainId = "0x4";
+      if (chainId !== rinkebyChainId) {
+        alert("You are not connected to the Rinkeby Test Network!");
+      } else {
+        console.log("Connected", accounts[0]);
+        setCurrentAccount(accounts[0]);
+        getTotalNFTsMintedSoFar()
+        setupEventListener()
+      }
     } catch (error) {
       console.log(error);
     }
@@ -74,7 +93,7 @@ const App = () => {
         // If you're familiar with webhooks, it's very similar to that!
         connectedContract.on("NewEpicNFTMinted", (from, tokenId) => {
           console.log(from, tokenId.toNumber());
-          alert(`Hey there!we have minted yoour NFT. it may be balnc rigth now. It can take a max of 10 min to show up on OpenSea. Here's the link: <https://testnets.opensea.io/assets/${CONTRACT_ADDRESS}/${tokenId.toNumber()}>`)
+          alert(`Hey there! we have minted your NFT. it may be blank rigth now. It can take a max of 10 min to show up on OpenSea. Here's the link: ${OPENSEA_LINK}${tokenId.toNumber()}>`)
         })
       }
     } catch (error) {
@@ -82,8 +101,27 @@ const App = () => {
     }
   }
 
+  const getTotalNFTsMintedSoFar = async () => {
+    try {
+      const { ethereum } = window;
+
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const connectedContract = new ethers.Contract(CONTRACT_ADDRESS, myEpicNFT.abi, signer);
+        console.log('--------------------------------------')
+        let currentNFT =  await connectedContract.getTotalNFTs();
+        setNftMinted(currentNFT.toNumber());
+      }
+    } catch (error) {
+      console.log(error)
+      console.log("Ethereum object doesn't exist!");
+    }
+  }
+
   const askContractToMintNft = async () => {
-   try {
+    setLoading(true);
+    try {
       const { ethereum } = window;
 
       if (ethereum) {
@@ -98,12 +136,15 @@ const App = () => {
         await nftTxn.wait();
 
         console.log(`Mined, see transaction: https://rinkeby.etherscan.io/tx/${nftTxn.hash}`);
+        setLoading(false);
       } else {
         console.log("Ethereum object doesn't exist!");
+        setLoading(false);
       }
 
     } catch (error) {
-      console.log(error)
+      console.log(error);
+      setLoading(false);
     }
   }
   /*
@@ -139,7 +180,7 @@ const App = () => {
       <main>
       <section className="section-hero hero-homepage">
         <div className="container">
-        <div className="section-body">
+          <div className="section-body">
             <section className="section-inner">
               <p className="sub-text">
                 Luciérnaga, luz que vaga,
@@ -149,16 +190,21 @@ const App = () => {
               </p>
               {currentAccount === "" ? (
                 renderNotConnectedContainer()
-              ) : (
+              ) : !loading ? (
                 <button onClick={askContractToMintNft} className="cta-button connect-wallet-button">
                   Mint NFT
                 </button>
+              ) : (<p className="sub-text">Loading...</p>)}
+              { nftMinted != null ? (
+                <p className="sub-text">Hay {nftMinted} luciernagas de 25, visitalas en <a href="https://testnets.opensea.io/collection/squarenft-awdphpfvhb">OpenSea</a></p>
+                ) : (
+                <p className="sub-text">Se el primero en tener una luciernaga</p>
               )}
-              {}
             </section>
           </div>
         </div>
       </section>
+
       </main>
       <footer className="footer">
         <div className="container">

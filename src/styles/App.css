@@ -35,6 +35,11 @@
   justify-content: space-between;
   align-items: center;
 }
+
+.section-body{
+  background-color: rgba(48, 44, 40, 0.7);
+  padding: 15px;
+}
 .wallet-conection {
   background-color: rgba(213, 129, 51, 0.7);
   padding: 5px;
@@ -48,7 +53,10 @@
 .sub-text {
   font-size: 25px;
   color: white;
-  text-shadow: 1px 1px #0d1116;
+}
+
+a, a:visited {
+  color: white;
 }
 
 .gradient-text {
@@ -93,6 +101,13 @@
   color: white;
   font-size: 18px;
   font-weight: bold;
+}
+
+.loader {
+  background-image: url('../images/loader.gif');
+  width: 50px;
+  height: 50px;
+  top: 50%;
 }
 
 .footer {
