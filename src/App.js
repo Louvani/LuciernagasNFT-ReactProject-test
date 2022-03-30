@@ -8,7 +8,7 @@ import myEpicNFT from './utils/MyEpicNFT.json'
 const TWITTER_HANDLE = 'PaulaLouvani';
 const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
 
-const CONTRACT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+const CONTRACT_ADDRESS = "0x52D3840cF511AFa7244Ed631b5688915CFeEEe79"
 
 // const OPENSEA_LINK = '';
 // const TOTAL_MINT_COUNT = 50;
@@ -21,7 +21,7 @@ const App = () => {
     const { ethereum } = window;
 
     if (!ethereum) {
-      console.log("Make sure you havee Mettamask!");
+      console.log("Make sure you have Metamask!");
       return;
     } else {
       console.log("We have the ethereum object", ethereum)
@@ -124,38 +124,55 @@ const App = () => {
 
   return (
     <div className="App">
-      <div className="container">
-        <header className="header-container header">
-          <div>
-
-
-          <p className="header gradient-text">Luciernagas</p>
-          <p className="sub-text">
-          Luciérnaga, luz que vaga,
-          en la noche que divaga,
-          con luna, con las estrellas,
-          te pareces a una de éllas.
-          </p>
-          {currentAccount === "" ? (
-            renderNotConnectedContainer()
-          ) : (
-            <button onClick={askContractToMintNft} className="cta-button connect-wallet-button">
-              Mint NFT
-            </button>
-          )}
-          {}
+      <header className="header">
+        <div className="container">
+          <div className="header-container">
+            <div className="logo">
+              <p className="gradient-text">Luciernagas</p>
+            </div>
+            <div className="wallet-conection">
+              { currentAccount ? <p> Wallet: {currentAccount.slice(0, 5)}...{currentAccount.slice(-3)} </p> : <p> Not connected </p> }
+            </div>
           </div>
-        </header>
-        <div className="footer-container">
-          <img alt="Twitter Logo" className="twitter-logo" src={twitterLogo} />
-          <a
-            className="footer-text"
-            href={TWITTER_LINK}
-            target="_blank"
-            rel="noreferrer"
-          >{`built by @${TWITTER_HANDLE}`}</a>
         </div>
-      </div>
+      </header>
+      <main>
+      <section className="section-hero hero-homepage">
+        <div className="container">
+        <div className="section-body">
+            <section className="section-inner">
+              <p className="sub-text">
+                Luciérnaga, luz que vaga,
+                en la noche que divaga,
+                con luna, con las estrellas,
+                te pareces a una de éllas.
+              </p>
+              {currentAccount === "" ? (
+                renderNotConnectedContainer()
+              ) : (
+                <button onClick={askContractToMintNft} className="cta-button connect-wallet-button">
+                  Mint NFT
+                </button>
+              )}
+              {}
+            </section>
+          </div>
+        </div>
+      </section>
+      </main>
+      <footer className="footer">
+        <div className="container">
+          <div className="footer-container">
+            <img alt="Twitter Logo" className="twitter-logo" src={twitterLogo} />
+            <a
+              className="footer-text"
+              href={TWITTER_LINK}
+              target="_blank"
+              rel="noreferrer"
+            >{`built by @${TWITTER_HANDLE}`}</a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
