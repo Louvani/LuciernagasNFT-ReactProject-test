@@ -42,7 +42,8 @@
   padding: 15px;
 }
 .wallet-conection {
-  background-color: rgba(213, 129, 51);
+  background-color: rgba(213, 129, 51, 0.679);
+  border-radius: 25px;
   padding: 5px;
   font-size: small;
   color: white;
@@ -57,7 +58,7 @@
 }
 
 a, a:visited {
-  color: white;
+  color: darkslateblue;
 }
 
 .gradient-text {
@@ -106,10 +107,10 @@ a, a:visited {
 
 .footer {
   display: flex;
-  justify-content: center;
+  justify-content:center;
   align-items: center;
-  position: absolute;
-  bottom: 10px;
+  position: relative;
+  top: 50px;
 }
 .footer-container {
   display: flex;
